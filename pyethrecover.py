@@ -23,9 +23,11 @@ from optparse import OptionParser
 
 # Arguments
 
-exodus = '36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2'
-minimum = 1000000
-maximum = 150000000000
+# What is this exodus? Looks suspicious, but doesn't seem to be used.
+# Perhaps it's something from original presale web code.
+#exodus = '36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2'
+#minimum = 1000000
+#maximum = 150000000000
 
 # Option parsing
 
@@ -56,10 +58,11 @@ def pbkdf2(x):
     return PBKDF2._pbkdf2(x, x, 2000)[:16]
 
 
+# I don't see a need to make requests, so let's kill it
 # Makes a request to a given URL (first arg) and optional params (second arg)
-def make_request(url, data, headers):
-    req = Request(url, data, headers)
-    return urlopen(req).read().strip()
+#def make_request(url, data, headers):
+#    req = Request(url, data, headers)
+#    return urlopen(req).read().strip()
 
 
 # Prefer openssl because it's more well-tested and reviewed; otherwise,
@@ -164,7 +167,7 @@ def crack(wallet_filename, grammar):
         t = f.read()
     w = json.loads(t)
     try:
-        Parallel(n_jobs=-1)(delayed(attempt)(w, pw) for pw in generate_all(grammar,''))
+        Parallel(n_jobs=-1)(delayed(attempt)(w, pw, n) for n, pw in enumarate(generate_all(grammar,'')))
     except Exception, e:
         traceback.print_exc()
         while True:
@@ -179,9 +182,9 @@ def generate_all(el, tr):
     else:
         yield tr
 
-def attempt(w, pw):
+def attempt(w, pw, n):
     try:
-        print (pw)
+	print (str(n) + ': ' + pw)
         raise PasswordFoundException(
             """\n\nYour seed is:\n%s\nYour password is:\n%s""" % (getseed(w['encseed'], pbkdf2(pw), w['ethaddr']), pw))
 
@@ -216,7 +219,7 @@ def __main__():
 
 
     try:
-        Parallel(n_jobs=-1)(delayed(attempt)(w, pw) for pw in pwds)
+        Parallel(n_jobs=-1)(delayed(attempt)(w, pw,n) for n, pw in enumerate(pwds))
     except Exception, e:
         traceback.print_exc()
         while True:
