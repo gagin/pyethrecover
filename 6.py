@@ -160,19 +160,23 @@ def ask_for_password():
 
 
 class PasswordFoundException(Exception):
-    pass
+    def __init__(self,s):
+	    f = open('success.txt','w')
+	    f.write(s) # python will convert \n to os.linesep
+	    f.close()
+	    sys.exit(0)
 
-def crack(wallet_filename, grammar):
-    with file(wallet_filename, 'r') as f:
-        t = f.read()
-    w = json.loads(t)
-    try:
-        Parallel(n_jobs=-1)(delayed(attempt)(w, pw, n) for n, pw in enumarate(generate_all(grammar,'')))
-    except Exception, e:
-        traceback.print_exc()
-        while True:
-            sys.stdout.write('\a')
-            sys.stdout.flush()
+#def crack(wallet_filename, grammar):
+#    with file(wallet_filename, 'r') as f:
+#        t = f.read()
+#    w = json.loads(t)
+#    try:
+#        Parallel(n_jobs=-1)(delayed(attempt)(w, pw, n) for n, pw in enumarate(generate_all(grammar,'')))
+#    except Exception, e:
+#        traceback.print_exc()
+#        while True:
+#            sys.stdout.write('\a')
+#            sys.stdout.flush()
 
 def generate_all(el, tr):
     if el:
@@ -229,9 +233,9 @@ def __main__():
 							attempt(w, pw,n)
 						    except Exception, e:
 						        traceback.print_exc()
-        						while True:
-            							sys.stdout.write('\a')
-            							sys.stdout.flush()
+        						#while True:
+            						#	sys.stdout.write('\a')
+            						#	sys.stdout.flush()
 
 if __name__ == "__main__":
     __main__()
