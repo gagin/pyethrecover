@@ -44,7 +44,9 @@ parser.add_option('-s', '--password-spec-file',
 parser.add_option('-w', '--wallet',
                   default='wallet.json', dest='wallet',
                   help="The wallet against which to try the passwords. (default: %default)")
-
+parser.add_option('-r', '--result',
+                  default='success.txt', dest='result',
+                  help="The file to dump the found password. (default: %default)")
 (options, args) = parser.parse_args()
 
 # Function wrappers
@@ -161,9 +163,16 @@ def ask_for_password():
 
 class PasswordFoundException(Exception):
     def __init__(self,s):
-	    f = open('success.txt','w')
-	    f.write(s) # python will convert \n to os.linesep
-	    f.close()
+	    try:
+		f = open(options.result,'w')
+	        f.write(s) # python will convert \n to os.linesep
+	        f.close()
+	    except IOError:
+	   	print("Error: can\'t open file " + options.result + " to write the result")
+		print(s)
+            else:
+                print("Password is written to " + options.result)
+		print(s)
 	    sys.exit(0)
 
 #def crack(wallet_filename, grammar):
