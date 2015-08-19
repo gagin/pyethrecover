@@ -164,7 +164,6 @@ def ask_for_password():
 class PasswordFoundException(Exception):
     def __init__(self,s):
 	    try:
-		# append mode in order to not overwrite previous file accidentally
 		f = open(options.result,'a')
 	        f.write(s) # python will convert \n to os.linesep
 	        f.close()
@@ -246,7 +245,11 @@ def __main__():
 	for i0,s0 in enumerate(grammar[0]):
 		for i1,s1 in enumerate(grammar[1]):
 			for i2,s2 in enumerate(grammar[2]):
+				if i2<3:
+					continue
 				for i3,s3 in enumerate(grammar[3]):
+					if i2==3 and i3<26:
+						continue
 					for i4,s4 in enumerate(grammar[4]):
 						pw5 = s0 + s1 + s2 + s3 + s4
 						n5 = str(i0) + '-' + str(i1) + '-' + str(i2) + '-' + str(i3) + '-' + str(i4)
